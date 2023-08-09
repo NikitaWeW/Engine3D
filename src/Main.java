@@ -6,12 +6,12 @@ import org.lwjgl.glfw.GLFW;
 public class Main {
     public static void main(String[] args) {
         System.out.println("Hello world!");
-        Window windows = new Window(1200, 800, "basics");
+        Window windows = new Window(800, 600, "basics");
         windows.addListener(event -> GLFW.glfwTerminate());
         
         Component cube = new Component(new Cube());
-        cube.pos().angleX(45.0f);
-        cube.pos().angleY(45.0f);
+        cube.pos().angleX(45);
+        cube.pos().angleY(45);
         windows.addComponent(cube);
 
         //Component sphere = new Component(new Sphere());

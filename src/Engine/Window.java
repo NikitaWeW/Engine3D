@@ -7,18 +7,20 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryStack;
+import org.w3c.dom.ls.LSOutput;
 
 
+import java.io.Serializable;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public class Window extends Event implements Runnable {
+public class Window extends Event implements Runnable, Serializable {
     private long window;
     private int width;
     private int height;
-    private Position pos = new Position();
+    private float[] glFrustum = new float[] {-1.0f, 1.0f, -1.0f, 0.5f, 1.0f, 100.0f};
     private String title;
     private ArrayList<Component> components = new ArrayList<>();
 
@@ -60,7 +62,7 @@ public class Window extends Event implements Runnable {
             for(Component c : components) {
                 GL11.glMatrixMode(GL11.GL_PROJECTION);
                 GL11.glLoadIdentity();
-                GL11.glFrustum(-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 100.0f);
+                GL11.glFrustum(glFrustum[0], glFrustum[1], glFrustum[2], glFrustum[3], glFrustum[4], glFrustum[5]);
 
                 GL11.glMatrixMode(GL11.GL_MODELVIEW);
                 GL11.glLoadIdentity();
@@ -77,9 +79,7 @@ public class Window extends Event implements Runnable {
 
                 GLFW.glfwSwapBuffers(window);
             }
-
             glfwPollEvents();
-
             }
 
         glfwDestroyWindow(window);
@@ -95,11 +95,11 @@ public class Window extends Event implements Runnable {
     public int getHeight() {
         return height;
     }
-    public Position getPos() {
-        return pos;
-    }
     public String getTitle() {
         return title;
+    }
+    public float[] getGlFrustum() {
+        return glFrustum;
     }
     public ArrayList<Component> getComponents() {
         return components;
@@ -108,11 +108,6 @@ public class Window extends Event implements Runnable {
     public void setSize(int width, int height) {
         this.height = height;
         glfwSetWindowSize(window, width, height);
-    }
-    public void setPos(int x, int y) {
-        pos.X(x);
-        pos.Y(y);
-        glfwSetWindowPos(window, x, y);
     }
     public void setTitle(String title) {
         this.title = title;
@@ -124,5 +119,8 @@ public class Window extends Event implements Runnable {
     public void removeComponent(Component c) {
         components.remove(c);
     }
-
+    public void setGlFrustum(float[] glFrustum) {
+        if(glFrustum.length == 6)
+            this.glFrustum = glFrustum;
+    }
 }

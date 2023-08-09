@@ -1,9 +1,7 @@
 package Models;
 
 import Engine.Drawable;
-import Engine.Position;
 
-import static org.joml.Math.sqrt;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Sphere implements Drawable {

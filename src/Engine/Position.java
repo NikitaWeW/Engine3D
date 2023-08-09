@@ -5,9 +5,9 @@ import org.joml.Vector3f;
 import java.io.Serializable;
 
 public class Position implements Serializable {
-    private Vector3f pos = new Vector3f(0, 0, 0);
+    private Vector3f pos = new Vector3f(0, 0, -5);
     private Vector3f rotate = new Vector3f(0, 0, 0);
-    private Vector3f scale = new Vector3f(0, 0, 0);
+    private Vector3f scale = new Vector3f(1, 1, 1);
     
     public Position() {}
     public Position(float x, float y, float z) {
@@ -28,7 +28,7 @@ public class Position implements Serializable {
     }
 
     public void angleX(float x) {
-        rotate.z = x;
+        rotate.x = x;
     }
     public void angleY(float y) {
         rotate.y = y;
