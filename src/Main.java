@@ -8,16 +8,11 @@ public class Main {
         System.out.println("Hello world!");
         Window windows = new Window(800, 600, "basics");
         windows.addListener(event -> GLFW.glfwTerminate());
+        windows.cam().getPosition().angleX(45);
         
         Component cube = new Component(new Cube());
         cube.pos().angleX(45);
         cube.pos().angleY(45);
         windows.addComponent(cube);
-
-        //Component sphere = new Component(new Sphere());
-        //sphere.pos().angleX(45.0f);
-        //sphere.pos().angleY(45.0f);
-        //sphere.pos().X(-10);
-        //windows.addComponent(cube);
     }
 }

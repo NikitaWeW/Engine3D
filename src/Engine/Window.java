@@ -1,25 +1,22 @@
 package Engine;
 
 import Engine.Event.Event;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.system.MemoryStack;
-import org.w3c.dom.ls.LSOutput;
 
 
 import java.io.Serializable;
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.*;
 
 public class Window extends Event implements Runnable, Serializable {
     private long window;
     private int width;
     private int height;
+    private Camera cam = new Camera();
     private float[] glFrustum = new float[] {-1.0f, 1.0f, -1.0f, 0.5f, 1.0f, 100.0f};
     private String title;
     private ArrayList<Component> components = new ArrayList<>();
@@ -49,7 +46,6 @@ public class Window extends Event implements Runnable, Serializable {
         GLFW.glfwShowWindow(window);
 
         while (!glfwWindowShouldClose(window)) {
-
             GLFW.glfwMakeContextCurrent(window);
             GL.createCapabilities();
 
@@ -60,25 +56,33 @@ public class Window extends Event implements Runnable, Serializable {
             GL11.glEnable(GL11.GL_DEPTH_TEST);
 
             for(Component c : components) {
-                GL11.glMatrixMode(GL11.GL_PROJECTION);
-                GL11.glLoadIdentity();
-                GL11.glFrustum(glFrustum[0], glFrustum[1], glFrustum[2], glFrustum[3], glFrustum[4], glFrustum[5]);
 
                 GL11.glMatrixMode(GL11.GL_MODELVIEW);
-                GL11.glLoadIdentity();
+                glLoadIdentity();
+
+                glRotatef(cam.getPosition().angleX(), 1, 0, 0);
+                glRotatef(cam.getPosition().angleY(), 0, 1, 0);
+                glRotatef(cam.getPosition().angleZ(), 0, 0, 1);
+
+                glTranslatef(cam.getPosition().X(), cam.getPosition().Y(), cam.getPosition().Z());
+
+                GL11.glMatrixMode(GL11.GL_PROJECTION);
+                glLoadIdentity();
+                GL11.glFrustum(glFrustum[0], glFrustum[1], glFrustum[2], glFrustum[3], glFrustum[4], glFrustum[5]);
 
                 GL11.glTranslatef(c.pos().X(), c.pos().Y(), c.pos().Z());
 
                 GL11.glScalef(c.pos().scaleX(), c.pos().scaleY(), c.pos().scaleZ());
 
-                GL11.glRotatef(c.pos().angleX(), 1.0f, 0.0f, 0.0f);
-                GL11.glRotatef(c.pos().angleY(), 0.0f, 1.0f, 0.0f);
-                GL11.glRotatef(c.pos().angleZ(), 0.0f, 0.0f, 1.0f);
+                glRotatef(c.pos().angleX(), 1.0f, 0.0f, 0.0f);
+                glRotatef(c.pos().angleY(), 0.0f, 1.0f, 0.0f);
+                glRotatef(c.pos().angleZ(), 0.0f, 0.0f, 1.0f);
 
                 c.drawable().draw();
 
                 GLFW.glfwSwapBuffers(window);
             }
+
             glfwPollEvents();
             }
 
@@ -103,6 +107,9 @@ public class Window extends Event implements Runnable, Serializable {
     }
     public ArrayList<Component> getComponents() {
         return components;
+    }
+    public Camera cam() {
+        return cam;
     }
 
     public void setSize(int width, int height) {

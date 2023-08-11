@@ -8,7 +8,7 @@ public class Cube implements Drawable {
     public void draw() {
         float size = 1.0f;
         GL11.glBegin(GL11.GL_QUADS);
-        GL11.glColor3f(1.0f, 0.0f, 0.0f);
+        GL11.glColor3f(0.7f, 0.7f, 0.7f);
 
         GL11.glVertex3f(-size, size, -size);
         GL11.glVertex3f(size, size, -size);

@@ -1,6 +1,7 @@
 package Models;
 
 import Engine.Drawable;
+import org.lwjgl.opengl.GL11;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -13,6 +14,7 @@ public class Sphere implements Drawable {
         float x, y, z, alpha, beta;
         for (alpha = 0.0f; alpha < Math.PI; alpha += PI / gradation) {
             glBegin(GL_TRIANGLE_STRIP);
+            GL11.glColor3f(0.7f, 0.7f, 0.7f);
             for (beta = 0.0f; beta < 2.01f * Math.PI; beta += PI / gradation) {
                 x = (float) (radius * Math.cos(beta) * Math.sin(alpha));
                 y = (float) (radius * Math.sin(beta) * Math.sin(alpha));
