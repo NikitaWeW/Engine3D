@@ -17,9 +17,10 @@ public class Window extends Event implements Runnable, Serializable {
     private int width;
     private int height;
     private Camera cam = new Camera();
-    private float[] glFrustum = new float[] {-1.0f, 1.0f, -1.0f, 0.5f, 1.0f, 100.0f};
+    private float[] glFrustum = new float[] {-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 100.0f};
     private String title;
     private ArrayList<Component> components = new ArrayList<>();
+    private float fov = 45.0f;
 
     public Window(int width, int height, String title) throws IllegalStateException {
         this.width = width;
@@ -43,6 +44,9 @@ public class Window extends Event implements Runnable, Serializable {
             glfwTerminate();
             throw new IllegalStateException("Failed to create a window");
         }
+
+        GLFW.glfwSwapInterval(1);
+
         GLFW.glfwShowWindow(window);
 
         while (!glfwWindowShouldClose(window)) {
@@ -56,6 +60,19 @@ public class Window extends Event implements Runnable, Serializable {
             GL11.glEnable(GL11.GL_DEPTH_TEST);
 
             for(Component c : components) {
+                float aspectRatio = (float) width / height;
+                glFrustum[3] = glFrustum[4] * (float) Math.tan(Math.toRadians(fov / 2));
+                glFrustum[2] = -glFrustum[3];
+                glFrustum[1]  = glFrustum[3] * aspectRatio;
+                glFrustum[0] = -glFrustum[1];
+
+                System.out.println(glFrustum[0]);
+                System.out.println(glFrustum[1]);
+                System.out.println(glFrustum[2]);
+                System.out.println(glFrustum[3]);
+                System.out.println(glFrustum[4]);
+                System.out.println(glFrustum[5]);
+                System.out.println("-------------");
 
                 GL11.glMatrixMode(GL11.GL_MODELVIEW);
                 glLoadIdentity();
@@ -78,13 +95,17 @@ public class Window extends Event implements Runnable, Serializable {
                 glRotatef(c.pos().angleY(), 0.0f, 1.0f, 0.0f);
                 glRotatef(c.pos().angleZ(), 0.0f, 0.0f, 1.0f);
 
-                c.drawable().draw();
+                c.draw();
 
-                GLFW.glfwSwapBuffers(window);
+                //for(Component j : components) {
+                    //    if(c.checkColision(j)) {
+                        //        System.out.println("!!!!!!!!!!!!");
+                        //    }
+                    //}
             }
-
+            GLFW.glfwSwapBuffers(window);
             glfwPollEvents();
-            }
+        }
 
         glfwDestroyWindow(window);
         update();
@@ -111,6 +132,9 @@ public class Window extends Event implements Runnable, Serializable {
     public Camera cam() {
         return cam;
     }
+    public float getFov() {
+        return fov;
+    }
 
     public void setSize(int width, int height) {
         this.height = height;
@@ -129,5 +153,8 @@ public class Window extends Event implements Runnable, Serializable {
     public void setGlFrustum(float[] glFrustum) {
         if(glFrustum.length == 6)
             this.glFrustum = glFrustum;
+    }
+    public void setFov(float fov) {
+        this.fov = fov;
     }
 }

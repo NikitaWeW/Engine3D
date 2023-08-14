@@ -1,11 +1,13 @@
 package Models;
 
+import Engine.Component;
 import Engine.Drawable;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public class Sphere implements Drawable {
+public class Sphere extends Component {
     @Override
     public void draw() {
         float radius = 1.0f;
@@ -26,6 +28,7 @@ public class Sphere implements Drawable {
                 z = (float) (radius * Math.cos(alpha + PI / gradation));
                 glTexCoord2f(beta / (2.0f * PI), alpha / PI + 1.0f / gradation);
                 glVertex3f(x, y, z);
+                addVertex(new Vector3f(x, y, z));
             }
             glEnd();
         }

@@ -5,7 +5,7 @@ import org.joml.Vector3f;
 import java.io.Serializable;
 
 public class Position implements Serializable {
-    private Vector3f pos = new Vector3f(0, 0, -5);
+    private Vector3f pos = new Vector3f(0, 0, -10);
     private Vector3f rotate = new Vector3f(0, 0, 0);
     private Vector3f scale = new Vector3f(1, 1, 1);
     
@@ -17,34 +17,43 @@ public class Position implements Serializable {
         pos.set(d);
     }
 
-    public void X(float x) {
+    public Position X(float x) {
         pos.x = x;
+        return this;
     }
-    public void Y(float y) {
+    public Position Y(float y) {
         pos.y = y;
+        return this;
     }
-    public void Z(float z) {
+    public Position Z(float z) {
         pos.z = z;
+        return this;
     }
 
-    public void angleX(float x) {
+    public Position angleX(float x) {
         rotate.x = x;
+        return this;
     }
-    public void angleY(float y) {
+    public Position angleY(float y) {
         rotate.y = y;
+        return this;
     }
-    public void angleZ(float z) {
+    public Position angleZ(float z) {
         rotate.z = z;
+        return this;
     }
 
-    public void scaleX(float x) {
+    public Position scaleX(float x) {
         scale.x = x;
+        return this;
     }
-    public void scaleY(float y) {
+    public Position scaleY(float y) {
         scale.y = y;
+        return this;
     }
-    public void scaleZ(float z) {
+    public Position scaleZ(float z) {
         scale.z = z;
+        return this;
     }
 
     public float X() {
