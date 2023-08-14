@@ -66,14 +66,6 @@ public class Window extends Event implements Runnable, Serializable {
                 glFrustum[1]  = glFrustum[3] * aspectRatio;
                 glFrustum[0] = -glFrustum[1];
 
-                System.out.println(glFrustum[0]);
-                System.out.println(glFrustum[1]);
-                System.out.println(glFrustum[2]);
-                System.out.println(glFrustum[3]);
-                System.out.println(glFrustum[4]);
-                System.out.println(glFrustum[5]);
-                System.out.println("-------------");
-
                 GL11.glMatrixMode(GL11.GL_MODELVIEW);
                 glLoadIdentity();
 

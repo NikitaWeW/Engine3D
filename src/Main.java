@@ -11,11 +11,11 @@ public class Main {
         windows.addListener(event -> GLFW.glfwTerminate());
 
         Cube cube = new Cube();
-        cube.pos().angleY(45);
+        cube.pos().angleY(45f);
         windows.addComponent(cube);
 
         Sphere sphere = new Sphere();
-        sphere.pos().Z(5f);
+        sphere.pos().X(1.5f);
         windows.addComponent(sphere);
 
     }
