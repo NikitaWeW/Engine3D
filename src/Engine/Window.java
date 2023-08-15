@@ -27,7 +27,6 @@ public class Window extends Event implements Runnable, Serializable {
         this.height = height;
         this.title = title;
         new Thread(this).start();
-
     }
 
     @Override
