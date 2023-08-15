@@ -2,8 +2,6 @@ import Engine.Window;
 import Models.*;
 import org.lwjgl.glfw.GLFW;
 
-import java.awt.*;
-
 public class Main {
     public static void main(String[] args) {
         System.out.println("Hello world!");

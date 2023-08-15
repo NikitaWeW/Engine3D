@@ -146,6 +146,9 @@ public class Window extends Event implements Runnable, Serializable {
         if(glFrustum.length == 6)
             this.glFrustum = glFrustum;
     }
+    public void setCam(Camera cam) {
+        this.cam = cam;
+    }
     public void setFov(float fov) {
         this.fov = fov;
     }
