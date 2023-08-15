@@ -36,7 +36,6 @@ public class Window extends Event implements Runnable, Serializable {
             throw new IllegalStateException("Failed to initialize GLFW");
 
         glfwDefaultWindowHints();
-        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
         window = glfwCreateWindow(width, height, title, 0, 0);
@@ -46,8 +45,6 @@ public class Window extends Event implements Runnable, Serializable {
         }
 
         GLFW.glfwSwapInterval(1);
-
-        GLFW.glfwShowWindow(window);
 
         while (!glfwWindowShouldClose(window)) {
             GLFW.glfwMakeContextCurrent(window);
