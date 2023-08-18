@@ -18,7 +18,6 @@ public class Main {
 
         Sphere sphere = new Sphere();
         sphere.getPos().x = 1.5f;
-        cube.setScale(new Vector3f(4.0f, 2.0f, 2.0f));
         windows.addComponent(sphere);
 
         while(b) {
