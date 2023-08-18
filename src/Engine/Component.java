@@ -3,7 +3,7 @@ package Engine;
 import org.joml.Vector3f;
 
 
-public abstract class Component implements Drawable {
+public abstract class Component {
     private Vector3f pos = new Vector3f(0, 0, -10);
     private Vector3f rotate = new Vector3f(0, 0, 0);
     private Vector3f scale = new Vector3f(1, 1, 1);
@@ -31,4 +31,6 @@ public abstract class Component implements Drawable {
     public void setScale(Vector3f scale) {
         this.scale = scale;
     }
+
+    public abstract void draw();
 }
