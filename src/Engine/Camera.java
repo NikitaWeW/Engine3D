@@ -1,11 +1,10 @@
 package Engine;
 
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public class Camera {
     private Vector3f position = new Vector3f(0, 0, 0);
-    private Vector3f rotation = new Vector3f(0, 1, 0);
+    private Vector3f rotation = new Vector3f(0, 0, 0);
 
     public Vector3f getPosition() {
         return position;
@@ -22,12 +21,12 @@ public class Camera {
     }
 
     public Camera() {}
-    public Camera(Vector3f position) {
-        setPosition(position);
-    }
     public Camera(Vector3f position, Vector3f rotation) {
         setPosition(position);
         setRotation(rotation);
+    }
+    public Camera(Vector3f position) {
+        setPosition(position);
     }
     public Camera(float x, float y, float z) {
         position = new Vector3f(x, y, z);
@@ -36,4 +35,5 @@ public class Camera {
         position = new Vector3f(x, y, z);
         rotation = new Vector3f(rotationX, rotationY, rotationZ);
     }
+
 }

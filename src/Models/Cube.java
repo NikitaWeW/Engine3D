@@ -1,8 +1,6 @@
 package Models;
 
 import Engine.Component;
-import Engine.Drawable;
-import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 
 public class Cube extends Component {

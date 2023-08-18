@@ -96,4 +96,14 @@ public class Position implements Serializable {
     public Vector3f getScale() {
         return scale;
     }
+
+    public void setPos(Vector3f pos) {
+        this.pos = pos;
+    }
+    public void setRotation(Vector3f rotation) {
+        this.rotate = rotation;
+    }
+    public void setScale(Vector3f scale) {
+        this.scale = scale;
+    }
 }
