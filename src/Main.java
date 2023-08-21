@@ -21,9 +21,9 @@ public class Main {
         windows.addComponent(sphere);
 
         while(b) {
-            windows.cam().setRotation(windows.cam().getRotation().add(new Vector3f(0.0f, 0.1f, 0.0f)));
+            windows.cam().setRotation(windows.cam().getRotation().add(new Vector3f(0.0f, 0.01f, 0.0f)));
             try {
-                Thread.sleep(100);
+                Thread.sleep(5);
             } catch (InterruptedException e) {
                 System.out.println(e);
             }
