@@ -20,15 +20,6 @@ public class Main {
         sphere.getPos().x = 1.5f;
         windows.addComponent(sphere);
 
-        while(b) {
-            windows.cam().setRotation(windows.cam().getRotation().add(new Vector3f(0.0f, 0.01f, 0.0f)));
-            try {
-                Thread.sleep(5);
-            } catch (InterruptedException e) {
-                System.out.println(e);
-            }
-        }
-
-
+        System.out.println(cube.checkColision(sphere));
     }
 }
