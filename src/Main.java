@@ -1,7 +1,6 @@
 import Engine.Window;
 import Models.*;
 import org.lwjgl.glfw.GLFW;
-import org.joml.Vector3f;
 
 public class Main {
     public static boolean b = true;
@@ -17,7 +16,7 @@ public class Main {
         windows.addComponent(cube);
 
         Sphere sphere = new Sphere();
-        sphere.getPos().x = 1.5f;
+        sphere.getPos().x = 5f;
         windows.addComponent(sphere);
 
         System.out.println(cube.checkColision(sphere));

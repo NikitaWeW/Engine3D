@@ -1,7 +1,6 @@
 package Engine;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -14,8 +13,7 @@ public abstract class Component {
 
     public boolean checkColision(Component component) {
         ArrayList<Vector3f> transformedVertices = transformVertices(getVertices(), pos, rotate, scale);
-        ArrayList<Vector3f> componentTransformedVertices = transformVertices(component.getVertices(), component.getPos(), 
-            component.getRotate(), component.getScale());
+        ArrayList<Vector3f> componentTransformedVertices = transformVertices(component.getVertices(), component.getPos(), component.getRotate(), component.getScale());
 
         Vector3f max = new Vector3f(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
         Vector3f min = new Vector3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
@@ -43,9 +41,9 @@ public abstract class Component {
             if(vertex.z < componentMin.z) componentMin.z = vertex.z;
         }
 
-        if (max.x <= componentMin.x && min.x >= componentMax.x) return false;
-        if (max.y <= componentMin.y && min.y >= componentMax.y) return false;
-        if (max.z <= componentMin.z && min.z >= componentMax.z) return false;
+        if (max.x <= componentMin.x || min.x >= componentMax.x) return false;
+        if (max.y <= componentMin.y || min.y >= componentMax.y) return false;
+        if (max.z <= componentMin.z || min.z >= componentMax.z) return false;
         return true;
     }
 
@@ -72,7 +70,7 @@ public abstract class Component {
     public abstract void draw();
     public abstract ArrayList<Vector3f> getVertices();
 
-    private static ArrayList<Vector3f> transformVertices(List<Vector3f> vertices, Vector3f position, Vector3f rotation, Vector3f scale) {
+    private synchronized static ArrayList<Vector3f> transformVertices(ArrayList<Vector3f> vertices, Vector3f position, Vector3f rotation, Vector3f scale) {
         ArrayList<Vector3f> transformedVertices = new ArrayList<>();
         Matrix4f transformationMatrix = new Matrix4f()
             .translate(position)

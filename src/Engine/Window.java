@@ -89,6 +89,10 @@ public void run() {
             GL11.glPushMatrix();
             GL11.glTranslatef(newObjectPosition.x, newObjectPosition.y, newObjectPosition.z);
 
+            GL11.glRotatef(c.getRotate().x, 1.0f, 0.0f, 0.0f);
+            GL11.glRotatef(c.getRotate().y, 0.0f, 1.0f, 0.0f);
+            GL11.glRotatef(c.getRotate().z, 0.0f, 0.0f, 1.0f);
+
             GL11.glScalef(c.getScale().x, c.getScale().y, c.getScale().z);
 
             c.draw();
