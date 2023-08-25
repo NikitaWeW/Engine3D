@@ -10,7 +10,7 @@ import org.lwjgl.opengl.GL11;
 public class Cube extends Component {
     public float size = 1.0f;
     @Override
-    public void draw() {
+    public void render() {
         GL11.glBegin(GL11.GL_QUADS);
         GL11.glColor3f(0.7f, 0.7f, 0.7f);
 

@@ -7,7 +7,7 @@ import org.joml.Vector3f;
 
 
 public abstract class Component {
-    private Vector3f pos = new Vector3f(0, 0, -10);
+    private Vector3f pos = new Vector3f(0, 0, 0);
     private Vector3f rotate = new Vector3f(0, 0, 0);
     private Vector3f scale = new Vector3f(1, 1, 1);
 
@@ -60,14 +60,14 @@ public abstract class Component {
     public void setPos(Vector3f pos) {
         this.pos = pos;
     }
-    public void setRotation(Vector3f rotation) {
-        this.rotate = rotation;
+    public void setRotation(Vector3f rotate) {
+        this.rotate = rotate;
     }
     public void setScale(Vector3f scale) {
         this.scale = scale;
     }
 
-    public abstract void draw();
+    public abstract void render();
     public abstract ArrayList<Vector3f> getVertices();
 
     private synchronized static ArrayList<Vector3f> transformVertices(ArrayList<Vector3f> vertices, Vector3f position, Vector3f rotation, Vector3f scale) {

@@ -11,6 +11,9 @@ public class Event {
     public void removeListener(Listener listener) {
         listeners.remove(listener);
     }
+    public ArrayList<Listener> getListeners() {
+        return listeners;
+    }
     public void update() {
         for (Listener listener : listeners) {
             listener.handleEvent(this);

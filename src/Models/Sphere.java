@@ -14,7 +14,7 @@ public class Sphere extends Component {
     public int gradation = 100;
     public final float PI = (float) Math.PI;
     @Override
-    public void draw() {
+    public void render() {
         float x, y, z, alpha, beta;
         for (alpha = 0.0f; alpha < Math.PI; alpha += PI / gradation) {
             glBegin(GL_TRIANGLE_STRIP);
