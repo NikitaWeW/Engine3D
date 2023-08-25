@@ -1,7 +1,5 @@
 package Engine;
 
-import Engine.Event.Event;
-
 import org.joml.*;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.*;
@@ -13,7 +11,7 @@ import java.util.ArrayList;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
-public class Window extends Event implements Runnable, Serializable {
+public class Window implements Runnable, Serializable {
     private long window;
     private int width;
     private int height;
@@ -22,6 +20,7 @@ public class Window extends Event implements Runnable, Serializable {
     private String title;
     private ArrayList<Component> components = new ArrayList<>();
     private ArrayList<Light> lights = new ArrayList<>();
+    private ArrayList<Listener> listeners = new ArrayList<>();
     private float fov = 45.0f;
     private boolean lighting = false;
 
@@ -135,6 +134,12 @@ public class Window extends Event implements Runnable, Serializable {
     }
 
 
+    public void update() {
+        for (Listener listener : listeners) {
+            listener.handleEvent(this);
+        }
+    }
+
     public long getWindow() {
         return window;
     }
@@ -164,6 +169,15 @@ public class Window extends Event implements Runnable, Serializable {
     }
     public ArrayList<Light> getLights() {
         return lights;
+    }
+    public ArrayList<Listener> getListeners() {
+        return listeners;
+    }
+    public void addListener(Listener listener) {
+        listeners.add(listener);
+    }
+    public void removeListener(Listener listener) {
+        listeners.remove(listener);
     }
 
     public void setSize(int width, int height) {
