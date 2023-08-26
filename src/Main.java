@@ -10,7 +10,7 @@ public class Main {
 
         System.out.println("Hello world!");
         Window windows = new Window(800, 600, "toaster");
-        windows.setLighting(true);;
+        windows.setLighting(true);
 
         Cube cube = new Cube();
         cube.getRotate().y = 45.0f;
@@ -25,7 +25,7 @@ public class Main {
 
         PointLight light = new PointLight();
         light.setPos(new Vector3f(4.0f, 0.0f, -5.0f));
-        light.setIntensity(new Vector4f(10, 10, 0, 0));
+        light.setIntensity(new Vector4f(10, 10, 10, 0));
         light.setAttenuationParameters(new Vector3f(1, 0, 0));
         windows.addLight(light);
 
