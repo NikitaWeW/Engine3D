@@ -5,7 +5,7 @@ import org.joml.*;
 import org.lwjgl.glfw.GLFW;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         GLFW.glfwInit();
 
         System.out.println("Hello world!");
@@ -25,9 +25,12 @@ public class Main {
 
         PointLight light = new PointLight();
         light.setPos(new Vector3f(4.0f, 0.0f, -5.0f));
+        light.setIntensity(new Vector4f(10, 10, 0, 0));
         light.setAttenuationParameters(new Vector3f(1, 0, 0));
         windows.addLight(light);
 
-        windows.addListener(event -> windows.cam().getRotation().add(0, 0.01f, 0)); 
+        windows.addListener(event -> {
+            windows.cam().getRotation().add(new Vector3f(0, 0.01f, 0));
+        });
     }
 }
