@@ -87,11 +87,14 @@ public class Window implements Runnable, Serializable {
                     .rotateY(light.getRotate().y)
                     .rotateZ(light.getRotate().z);
 
-                GL11.glLightfv(GL11.GL_LIGHT0, GL11.GL_POSITION, new float[] {rotatedPosition.x, rotatedPosition.y, rotatedPosition.z, 1.0f});
+                GL11.glLightfv(light.getType(), GL11.GL_POSITION, new float[] {rotatedPosition.x, rotatedPosition.y, rotatedPosition.z, 1.0f});
 
-                GL11.glLightf(GL11.GL_LIGHT0, GL11.GL_CONSTANT_ATTENUATION, light.getAttenuationParameters().x);
-                GL11.glLightf(GL11.GL_LIGHT0, GL11.GL_LINEAR_ATTENUATION, light.getAttenuationParameters().y);
-                GL11.glLightf(GL11.GL_LIGHT0, GL11.GL_QUADRATIC_ATTENUATION, light.getAttenuationParameters().z);
+                GL11.glLightf(light.getType(), GL11.GL_CONSTANT_ATTENUATION, light.getAttenuationParameters().x);
+                GL11.glLightf(light.getType(), GL11.GL_LINEAR_ATTENUATION, light.getAttenuationParameters().y);
+                GL11.glLightf(light.getType(), GL11.GL_QUADRATIC_ATTENUATION, light.getAttenuationParameters().z);
+                GL11.glLightfv(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, new float[] { light.getIntensity().x, light.getIntensity().y, light.getIntensity().z, light.getIntensity().w });
+
+                GL11.glEnable(light.getType());
 
                 light.render();
 

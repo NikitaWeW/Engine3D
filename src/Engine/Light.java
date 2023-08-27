@@ -7,11 +7,19 @@ public abstract class Light {
     private Vector3f rotate = new Vector3f(0, 0, 0);
     private Vector4f intensity = new Vector4f(1, 1, 1, 0);
     private Vector3f attenuationParameters = new Vector3f();
-    
+    private int type;
+
     public abstract void render();
+
+    public Light(int type) {
+        this.type = type;
+    }
 
     public void setPos(Vector3f pos) {
         this.pos = pos;
+    }
+    public void setType(int type) {
+        this.type = type;
     }
     public Vector3f getPos() {
         return pos;
@@ -33,5 +41,8 @@ public abstract class Light {
     }
     public Vector4f getIntensity() {
         return intensity;
+    }
+    public int getType() {
+        return type;
     }
 }
