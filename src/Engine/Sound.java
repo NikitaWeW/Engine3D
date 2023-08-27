@@ -13,7 +13,6 @@ public class Sound {
     private int sourceId;
     private String path; //only .wav
     private Vector3f position = new Vector3f();
-    private float volume = 100;
 
     public Sound(String path) {
         var openALDevice = alcOpenDevice((ByteBuffer) null);
@@ -37,9 +36,6 @@ public class Sound {
     public Vector3f getPosition() {
         return position;
     }
-    public float getVolume() {
-        return volume;
-    }
     public int getID() {
         return sourceId;
     }
@@ -49,8 +45,5 @@ public class Sound {
     }
     public void setPosition(Vector3f position) {
         this.position = position;
-    }
-    public void setVolume(float volume) {
-        this.volume = volume;
     }
 }
