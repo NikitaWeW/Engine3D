@@ -12,8 +12,8 @@ public abstract class Component {
     private Vector3f scale = new Vector3f(1, 1, 1);
 
     public boolean checkColision(Component component) {
-        ArrayList<Vector3f> transformedVertices = transformVertices(getVertices(), pos, rotate, scale);
-        ArrayList<Vector3f> componentTransformedVertices = transformVertices(component.getVertices(), component.getPos(), component.getRotate(), component.getScale());
+        ArrayList<Vector3f> transformedVertices = transformVertices();
+        ArrayList<Vector3f> componentTransformedVertices = component.transformVertices();
 
         Vector3f max = new Vector3f(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
         Vector3f min = new Vector3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
@@ -70,16 +70,16 @@ public abstract class Component {
     public abstract void render();
     public abstract ArrayList<Vector3f> getVertices();
 
-    private synchronized static ArrayList<Vector3f> transformVertices(ArrayList<Vector3f> vertices, Vector3f position, Vector3f rotation, Vector3f scale) {
+    public synchronized ArrayList<Vector3f> transformVertices() {
         ArrayList<Vector3f> transformedVertices = new ArrayList<>();
         Matrix4f transformationMatrix = new Matrix4f()
-            .translate(position)
-            .rotateX((float) Math.toRadians(rotation.x))
-            .rotateY((float) Math.toRadians(rotation.y))
-            .rotateZ((float) Math.toRadians(rotation.z))
+            .translate(pos)
+            .rotateX((float) Math.toRadians(rotate.x))
+            .rotateY((float) Math.toRadians(rotate.y))
+            .rotateZ((float) Math.toRadians(rotate.z))
             .scale(scale);
 
-        for (Vector3f vertex : vertices) {
+        for (Vector3f vertex : getVertices()) {
             Vector3f transformedVertex = new Vector3f(vertex);
             transformedVertex.mulPosition(transformationMatrix);
             transformedVertices.add(transformedVertex);

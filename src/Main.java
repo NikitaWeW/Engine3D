@@ -29,8 +29,6 @@ public class Main {
         light.setAttenuationParameters(new Vector3f(1, 0, 0));
         windows.addLight(light);
 
-        windows.addListener(event -> {
-            windows.cam().getRotation().add(new Vector3f(0, 0.01f, 0));
-        });
+        windows.addListener(event -> windows.cam().getRotation().add(new Vector3f(0, 0.01f, 0)));
     }
 }
