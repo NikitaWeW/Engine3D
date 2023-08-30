@@ -1,49 +1,103 @@
 package Engine;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
-import org.joml.Vector3f;
-import org.lwjgl.openal.*;
-
-import static org.lwjgl.openal.ALC10.*;
-import static org.lwjgl.system.MemoryUtil.NULL;
+import javax.sound.sampled.*;
 
 public class Sound {
-    private int sourceId;
     private String path; //only .wav
-    private Vector3f position = new Vector3f();
+    private ArrayList<Listener> listeners = new ArrayList<>();
+    private Clip clip;
 
     public Sound(String path) {
-        var openALDevice = alcOpenDevice((ByteBuffer) null);
-        if (openALDevice == NULL) {
-            throw new IllegalStateException("Failed to open OpenAL device");
-        }
-        ALCCapabilities alcCapabilities = ALC.createCapabilities(openALDevice);
-        var openALContext = alcCreateContext(openALDevice, (IntBuffer) null);
-        if (openALContext == NULL) {
-            throw new IllegalStateException("Failed to create OpenAL context");
-        }
-        alcMakeContextCurrent(openALContext);
-        AL.createCapabilities(alcCapabilities);
-        sourceId = org.lwjgl.openal.AL10.alGenSources();
         this.path = path;
+        try {
+        clip = AudioSystem.getClip();
+        } catch(LineUnavailableException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getPath() {
         return path;
     }
-    public Vector3f getPosition() {
-        return position;
-    }
-    public int getID() {
-        return sourceId;
+    public ArrayList<Listener> getListeners() {
+        return listeners;
     }
 
     public void setPath(String path) {
         this.path = path;
     }
-    public void setPosition(Vector3f position) {
-        this.position = position;
+    public void addListener(Listener listener) {
+        listeners.add(listener);
+    }
+    public void removeListener(Listener listener) {
+        listeners.remove(listener);
+    }
+
+    public void play() {
+        new Thread(() -> {
+            try {
+            File soundFile = new File(path);
+
+            clip.open(AudioSystem.getAudioInputStream(soundFile));
+
+            clip.start();
+
+            Thread.sleep(clip.getMicrosecondLength() / 1000);
+
+            clip.close();
+
+            } catch(LineUnavailableException e) {
+                playConverted();
+            } catch (Exception e) {
+            e.printStackTrace();
+            } finally {
+                for(Listener listener : listeners)
+                    listener.handleEvent();
+            }
+        }).start();
+    }
+    public void playConverted() {
+        try {
+            AudioInputStream originalStream = AudioSystem.getAudioInputStream(new File(path));
+    
+            AudioFormat desiredFormat = new AudioFormat(
+                    AudioFormat.Encoding.PCM_SIGNED,
+                    44100,
+                    16,
+                    1,     
+                    2,    
+                    44100,
+                    false 
+            );
+    
+            if (AudioSystem.isConversionSupported(desiredFormat, originalStream.getFormat())) {
+
+                AudioInputStream convertedStream = AudioSystem.getAudioInputStream(desiredFormat, originalStream);
+    
+                Clip clip = AudioSystem.getClip();
+    
+                clip.open(convertedStream);
+    
+                clip.start();
+                
+                Thread.sleep(clip.getMicrosecondLength() / 1000);
+    
+                clip.close();
+                
+                convertedStream.close();
+            }
+    
+            originalStream.close();
+        } catch (IOException | LineUnavailableException | UnsupportedAudioFileException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void stop() {
+        clip.stop();
     }
 }

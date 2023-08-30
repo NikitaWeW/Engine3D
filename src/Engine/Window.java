@@ -1,26 +1,15 @@
 package Engine;
 
 import org.joml.*;
-import org.lwjgl.openal.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.system.MemoryUtil;
 
 import java.lang.Math;
 import java.util.ArrayList;
-
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-
-import java.nio.*;
 import java.io.*;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.openal.AL10.*;
-import static org.lwjgl.openal.ALC10.*;
-import static org.lwjgl.system.MemoryUtil.NULL;
 
 
 public class Window implements Runnable, Serializable {
@@ -143,83 +132,12 @@ public class Window implements Runnable, Serializable {
 
             GLFW.glfwSwapBuffers(window);
             glfwPollEvents();
-            update();
+            for (Listener listener : listeners) {
+                listener.handleEvent();
+            }
         }
 
         glfwDestroyWindow(window);
-    }
-
-
-    public void update() {
-        for (Listener listener : listeners) {
-            listener.handleEvent(this);
-        }
-    }
-
-    public void play(Sound sound) {
-        new Thread(() -> {
-            var openALDevice = alcOpenDevice((ByteBuffer) null);
-            if (openALDevice == NULL) {
-                throw new IllegalStateException("Failed to open OpenAL device");
-            }
-            ALCCapabilities alcCapabilities = ALC.createCapabilities(openALDevice);
-            var openALContext = alcCreateContext(openALDevice, (IntBuffer) null);
-            if (openALContext == NULL) {
-                throw new IllegalStateException("Failed to create OpenAL context");
-            }
-            alcMakeContextCurrent(openALContext);
-            AL.createCapabilities(alcCapabilities);
-            int buffer = loadSound(sound.getPath());
-            if (buffer != -1) {
-                int source = alGenSources();
-                alSourcei(source, AL_BUFFER, buffer);
-                alSourcePlay(source);
-                // Дождитесь завершения воспроизведения
-                while (alGetSourcei(source, AL_SOURCE_STATE) == AL_PLAYING) {
-                    Thread.yield();
-                }
-                alDeleteSources(source);
-                alDeleteBuffers(buffer);
-            }
-        }).start();
-
-    }
-    public void pause(Sound sound) {
-        alSourcePause(sound.getID());
-    }
-    public void stop(Sound sound) {
-        alSourceStop(sound.getID());
-    }
-    private int loadSound(String filePath) {
-        int buffer = alGenBuffers();
-
-        try (AudioInputStream audioStream = AudioSystem.getAudioInputStream(new File(filePath))) {
-            AudioFormat audioFormat = audioStream.getFormat();
-
-            int channels = audioFormat.getChannels();
-            int sampleRate = (int) audioFormat.getSampleRate();
-            int sampleSizeInBytes = audioFormat.getSampleSizeInBits() / 8;
-
-            byte[] audioData = audioStream.readAllBytes();
-            ByteBuffer pcm = MemoryUtil.memAlloc(audioData.length);
-            pcm.put(audioData).flip();
-
-            int format = -1;
-            if (channels == 1 && sampleSizeInBytes == 2) {
-                format = AL_FORMAT_MONO16;
-            } else if (channels == 2 && sampleSizeInBytes == 2) {
-                format = AL_FORMAT_STEREO16;
-            }
-
-            alBufferData(buffer, format, pcm, sampleRate);
-            MemoryUtil.memFree(pcm);
-            } catch (Exception e) {
-                e.printStackTrace();
-                alDeleteBuffers(buffer);
-                return -1;
-            }
-
-            return buffer;
     }
 
     public long getWindow() {

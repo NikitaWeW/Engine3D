@@ -35,5 +35,4 @@ public class Camera {
         position = new Vector3f(x, y, z);
         rotation = new Vector3f(rotationX, rotationY, rotationZ);
     }
-
 }
