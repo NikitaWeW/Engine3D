@@ -13,37 +13,9 @@ public class Cube extends Component {
     public void render() {
         GL11.glBegin(GL11.GL_QUADS);
         GL11.glColor3f(0.7f, 0.7f, 0.7f);
-
-        GL11.glVertex3f(-size, size, -size);
-        GL11.glVertex3f(size, size, -size);
-        GL11.glVertex3f(size, size, size);
-        GL11.glVertex3f(-size, size, size);
-
-        GL11.glVertex3f(-size, -size, -size);
-        GL11.glVertex3f(-size, -size, size);
-        GL11.glVertex3f(size, -size, size);
-        GL11.glVertex3f(size, -size, -size);
-
-        GL11.glVertex3f(-size, -size, size);
-        GL11.glVertex3f(-size, size, size);
-        GL11.glVertex3f(size, size, size);
-        GL11.glVertex3f(size, -size, size);
-
-        GL11.glVertex3f(-size, -size, -size);
-        GL11.glVertex3f(size, -size, -size);
-        GL11.glVertex3f(size, size, -size);
-        GL11.glVertex3f(-size, size, -size);
-
-        GL11.glVertex3f(-size, -size, -size);
-        GL11.glVertex3f(-size, -size, size);
-        GL11.glVertex3f(-size, size, size);
-        GL11.glVertex3f(-size, size, -size);
-
-        GL11.glVertex3f(size, -size, -size);
-        GL11.glVertex3f(size, size, -size);
-        GL11.glVertex3f(size, size, size);
-        GL11.glVertex3f(size, -size, size);
-
+        for(Vector3f vertex : getVertices()) {
+            GL11.glVertex3f(vertex.x, vertex.y, vertex.z);
+        }
         GL11.glEnd();
     }
 

@@ -11,14 +11,11 @@ public abstract class Component {
     private Vector3f rotate = new Vector3f(0, 0, 0);
     private Vector3f scale = new Vector3f(1, 1, 1);
 
-    public boolean checkColision(Component component) {
-        ArrayList<Vector3f> transformedVertices = transformVertices();
-        ArrayList<Vector3f> componentTransformedVertices = component.transformVertices();
+    public static boolean checkAABBColision(ArrayList<Vector3f> vertices, ArrayList<Vector3f> componentVertices) {
+        Vector3f max = new Vector3f(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
+        Vector3f min = new Vector3f(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
 
-        Vector3f max = new Vector3f(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
-        Vector3f min = new Vector3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
-
-        for(Vector3f vertex : transformedVertices) {
+        for(Vector3f vertex : vertices) {
             if(vertex.x > max.x) max.x = vertex.x;
             if(vertex.y > max.y) max.y = vertex.y;
             if(vertex.z > max.z) max.z = vertex.z;
@@ -28,10 +25,10 @@ public abstract class Component {
             if(vertex.z < min.z) min.z = vertex.z;
         }
 
-        Vector3f componentMax = new Vector3f(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
-        Vector3f componentMin = new Vector3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+        Vector3f componentMax = new Vector3f(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
+        Vector3f componentMin = new Vector3f(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
 
-        for(Vector3f vertex : componentTransformedVertices) {
+        for(Vector3f vertex : componentVertices) {
             if(vertex.x > componentMax.x) componentMax.x = vertex.x;
             if(vertex.y > componentMax.y) componentMax.y = vertex.y;
             if(vertex.z > componentMax.z) componentMax.z = vertex.z;
@@ -41,10 +38,35 @@ public abstract class Component {
             if(vertex.z < componentMin.z) componentMin.z = vertex.z;
         }
 
-        if (max.x <= componentMin.x || min.x >= componentMax.x) return false;
-        if (max.y <= componentMin.y || min.y >= componentMax.y) return false;
-        if (max.z <= componentMin.z || min.z >= componentMax.z) return false;
-        return true;
+        if (min.x <= componentMax.x &&
+            max.x >= componentMin.x &&
+            min.y <= componentMax.y &&
+            max.y >= componentMin.y &&
+            min.z <= componentMax.z &&
+            max.z >= componentMin.z) 
+                return true;
+        return false;
+    }
+
+    public abstract void render();
+    public abstract ArrayList<Vector3f> getVertices();
+
+    public ArrayList<Vector3f> transformVertices() {
+        ArrayList<Vector3f> vertices = new ArrayList<>();
+        Matrix4f transformationMatrix = new Matrix4f()
+            .translate(pos)
+            .rotateX((float) Math.toRadians(rotate.x))
+            .rotateY((float) Math.toRadians(rotate.y))
+            .rotateZ((float) Math.toRadians(rotate.z))
+            .scale(scale);
+
+        for (Vector3f vertex : getVertices()) {
+            Vector3f transformedVertex = new Vector3f(vertex);
+            transformedVertex.mulPosition(transformationMatrix);
+            vertices.add(transformedVertex);
+        }
+
+        return vertices;
     }
 
     public Vector3f getPos() {
@@ -65,26 +87,5 @@ public abstract class Component {
     }
     public void setScale(Vector3f scale) {
         this.scale = scale;
-    }
-
-    public abstract void render();
-    public abstract ArrayList<Vector3f> getVertices();
-
-    public synchronized ArrayList<Vector3f> transformVertices() {
-        ArrayList<Vector3f> transformedVertices = new ArrayList<>();
-        Matrix4f transformationMatrix = new Matrix4f()
-            .translate(pos)
-            .rotateX((float) Math.toRadians(rotate.x))
-            .rotateY((float) Math.toRadians(rotate.y))
-            .rotateZ((float) Math.toRadians(rotate.z))
-            .scale(scale);
-
-        for (Vector3f vertex : getVertices()) {
-            Vector3f transformedVertex = new Vector3f(vertex);
-            transformedVertex.mulPosition(transformationMatrix);
-            transformedVertices.add(transformedVertex);
-        }
-
-        return transformedVertices;
     }
 }
