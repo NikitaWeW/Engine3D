@@ -8,7 +8,7 @@ import javax.sound.sampled.*;
 
 public class Sound {
     private String path; //only .wav
-    private ArrayList<Listener> listeners = new ArrayList<>();
+    private ArrayList<Code> listeners = new ArrayList<>();
     private Clip clip;
 
     public Sound(String path) {
@@ -23,17 +23,17 @@ public class Sound {
     public String getPath() {
         return path;
     }
-    public ArrayList<Listener> getListeners() {
+    public ArrayList<Code> getListeners() {
         return listeners;
     }
 
     public void setPath(String path) {
         this.path = path;
     }
-    public void addListener(Listener listener) {
+    public void addListener(Code listener) {
         listeners.add(listener);
     }
-    public void removeListener(Listener listener) {
+    public void removeListener(Code listener) {
         listeners.remove(listener);
     }
 
@@ -55,8 +55,8 @@ public class Sound {
             } catch (Exception e) {
             e.printStackTrace();
             } finally {
-                for(Listener listener : listeners)
-                    listener.handleEvent();
+                for(Code listener : listeners)
+                    listener.doSomething();
             }
         }).start();
     }

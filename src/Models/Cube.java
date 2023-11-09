@@ -42,7 +42,7 @@ public class Cube extends Component {
 
 
     @Override
-    public ArrayList<Vector3f> getEdges() {
+    public ArrayList<Vector3f> getTriangles() {
         return new ArrayList<Vector3f>() {{
             add(new Vector3f(-size, size, -size));
             add(new Vector3f(-size, size, size));

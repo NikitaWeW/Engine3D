@@ -33,7 +33,21 @@ public class Sphere extends Component {
         glEnd();
     }
     @Override
-    public ArrayList<Vector3f> getEdges() {
-        return new ArrayList<Vector3f>() {{}};
+    public ArrayList<Vector3f> getTriangles() {
+        return new ArrayList<Vector3f>() {{
+            float x, y, z, alpha, beta;
+            for (alpha = 0.0f; alpha < Math.PI; alpha += PI / gradation) {
+                for (beta = 0.0f; beta < 2.01f * Math.PI; beta += PI / gradation) {
+                    x = (float) (radius * Math.cos(beta) * Math.sin(alpha));
+                    y = (float) (radius * Math.sin(beta) * Math.sin(alpha));
+                    z = (float) (radius * Math.cos(alpha));
+                    add(new Vector3f(x, y, z));
+                    x = (float) (radius * Math.cos(beta) * Math.sin(alpha + PI / gradation));
+                    y = (float) (radius * Math.sin(beta) * Math.sin(alpha + PI / gradation));
+                    z = (float) (radius * Math.cos(alpha + PI / gradation));
+                    add(new Vector3f(x, y, z));
+                }
+            }
+        }};
     }
 }

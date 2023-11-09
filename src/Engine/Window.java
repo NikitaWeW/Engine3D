@@ -4,7 +4,6 @@ import org.joml.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.glfw.GLFW;
 
-import java.lang.Math;
 import java.util.ArrayList;
 import java.io.*;
 
@@ -16,14 +15,13 @@ public class Window implements Runnable, Serializable {
     private long window;
     private int width;
     private int height;
-    private Camera cam = new Camera();
-    private float[] glFrustum = new float[] {-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 100.0f};
+    private Camera camera = new Camera();
     private String title;
     private ArrayList<Component> components = new ArrayList<>();
     private ArrayList<Light> lights = new ArrayList<>();
-    private ArrayList<Listener> listeners = new ArrayList<>();
-    private float fov = 45.0f;
+    private ArrayList<Code> renderListeners = new ArrayList<>();
     private boolean lighting = false;
+    private boolean rendering = true;
 
     public Window(int width, int height, String title) throws IllegalStateException {
         this.width = width;
@@ -34,112 +32,110 @@ public class Window implements Runnable, Serializable {
 
     @Override
     public void run() {
-        if (!GLFW.glfwInit())
-            throw new IllegalStateException("Failed to initialize GLFW");
-
-        glfwDefaultWindowHints();
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        if (!GLFW.glfwInit()) throw new IllegalStateException("There is no GLFW init");
 
         window = glfwCreateWindow(width, height, title, 0, 0);
-        if (window == 0)
-            throw new IllegalStateException("Failed to create a window");
 
-        GLFW.glfwSwapInterval(1);
+        if (window == 0) throw new IllegalStateException("Failed to create a window");
 
-        while (!glfwWindowShouldClose(window)) {
-            
+        GLFW.glfwSwapInterval(0);
+
+        while(!glfwWindowShouldClose(window)) {
+            while(!rendering){} //just wait
+
             GLFW.glfwMakeContextCurrent(window);
             GL.createCapabilities();
 
             GL11.glViewport(0, 0, width, height);
+            camera.configureGlFrustum(width, height);
 
             GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
             GL11.glEnable(GL11.GL_DEPTH_TEST);
+            if(lighting) GL11.glEnable(GL_LIGHTING);
 
-            if(lighting)
-                GL11.glEnable(GL_LIGHTING);
+            renderLights();
+            renderComponents();
 
-            for(Light light : lights) {
-                Vector3f delta = new Vector3f(light.getPos()).sub(cam.getPosition());
-                Matrix4f rotationMatrix = new Matrix4f()
-                    .rotateX(cam.getRotation().x)
-                    .rotateY(cam.getRotation().y)
-                    .rotateZ(cam.getRotation().z);
-
-                Vector3f rotatedVector = rotationMatrix.transformDirection(delta);
-                Vector3f newObjectPosition = new Vector3f(cam.getPosition()).add(rotatedVector);
-
-                
-                Vector3f rotatedPosition = new Vector3f(newObjectPosition)
-                    .rotateX(light.getRotate().x)
-                    .rotateY(light.getRotate().y)
-                    .rotateZ(light.getRotate().z);
-
-                GL11.glLightfv(light.getType(), GL11.GL_POSITION, new float[] {rotatedPosition.x, rotatedPosition.y, rotatedPosition.z, 1.0f});
-
-                GL11.glLightf(light.getType(), GL11.GL_CONSTANT_ATTENUATION, light.getAttenuationParameters().x);
-                GL11.glLightf(light.getType(), GL11.GL_LINEAR_ATTENUATION, light.getAttenuationParameters().y);
-                GL11.glLightf(light.getType(), GL11.GL_QUADRATIC_ATTENUATION, light.getAttenuationParameters().z);
-                GL11.glLightfv(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, new float[] { light.getIntensity().x, light.getIntensity().y, light.getIntensity().z, light.getIntensity().w });
-
-                GL11.glEnable(light.getType());
-
-                light.render();
-
-            }
-            for(Component c : components) {
-                float aspectRatio = (float) width / height;
-                glFrustum[3] = glFrustum[4] * (float) Math.tan(Math.toRadians(fov / 2));
-                glFrustum[2] = -glFrustum[3];
-                glFrustum[1] = glFrustum[3] * aspectRatio;
-                glFrustum[0] = -glFrustum[1];
-
-                GL11.glMatrixMode(GL11.GL_PROJECTION);
-                glLoadIdentity();
-                GL11.glFrustum(glFrustum[0], glFrustum[1], glFrustum[2], glFrustum[3], glFrustum[4], glFrustum[5]);
-
-                GL11.glMatrixMode(GL11.GL_MODELVIEW);
-                glLoadIdentity();
-
-                GL11.glTranslatef(cam.getPosition().x, cam.getPosition().y, cam.getPosition().z);
-
-                Vector3f delta = new Vector3f(c.getPos()).sub(cam.getPosition());
-                Matrix4f rotationMatrix = new Matrix4f()
-                    .rotateX(cam.getRotation().x)
-                    .rotateY(cam.getRotation().y)
-                    .rotateZ(cam.getRotation().z);
-
-                Vector3f rotatedVector = rotationMatrix.transformDirection(delta);
-                Vector3f newObjectPosition = new Vector3f(cam.getPosition()).add(rotatedVector);
-
-                GL11.glPushMatrix();
-                GL11.glTranslatef(newObjectPosition.x, newObjectPosition.y, newObjectPosition.z);
-
-                GL11.glRotatef(c.getRotate().x, 1.0f, 0.0f, 0.0f);
-                GL11.glRotatef(c.getRotate().y, 0.0f, 1.0f, 0.0f);
-                GL11.glRotatef(c.getRotate().z, 0.0f, 0.0f, 1.0f);
-
-                GL11.glScalef(c.getScale().x, c.getScale().y, c.getScale().z);
-
-                c.render();
-
-                GL11.glPopMatrix();
-            }
-
-            if(lighting)
-                GL11.glDisable(GL_LIGHTING);
-
+            GL11.glDisable(GL_LIGHTING);
             GLFW.glfwSwapBuffers(window);
             glfwPollEvents();
-            for (Listener listener : listeners) {
-                listener.handleEvent();
+            for (Code renderListener : renderListeners) {
+                renderListener.doSomething();
             }
         }
-
         glfwDestroyWindow(window);
     }
 
+    public void renderComponents() {
+        for(Component c : components) {
+
+            GL11.glMatrixMode(GL11.GL_PROJECTION);
+            glLoadIdentity();
+            GL11.glFrustum(camera.getGlFrustum()[0], camera.getGlFrustum()[1], camera.getGlFrustum()[2], camera.getGlFrustum()[3], camera.getGlFrustum()[4], camera.getGlFrustum()[5]);
+
+            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            glLoadIdentity();
+
+            GL11.glTranslatef(camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
+
+            Vector3f delta = new Vector3f(c.getPos()).sub(camera.getPosition());
+            Matrix4f rotationMatrix = new Matrix4f()
+                .rotateX(camera.getRotation().x)
+                .rotateY(camera.getRotation().y)
+                .rotateZ(camera.getRotation().z);
+
+            Vector3f rotatedVector = rotationMatrix.transformDirection(delta);
+            Vector3f newObjectPosition = new Vector3f(camera.getPosition()).add(rotatedVector);
+            
+            GL11.glPushMatrix();
+            GL11.glTranslatef(newObjectPosition.x, newObjectPosition.y, newObjectPosition.z);
+            
+            GL11.glRotatef(c.getRotate().x, 1.0f, 0.0f, 0.0f);
+            GL11.glRotatef(c.getRotate().y, 0.0f, 1.0f, 0.0f);
+            GL11.glRotatef(c.getRotate().z, 0.0f, 0.0f, 1.0f);
+            
+            GL11.glScalef(c.getScale().x, c.getScale().y, c.getScale().z);
+
+            c.render();
+
+            GL11.glPopMatrix();
+        }
+    }
+    public void renderLights() {
+        for(Light light : lights) {
+            Vector3f delta = new Vector3f(light.getPos()).sub(camera.getPosition());
+            Matrix4f rotationMatrix = new Matrix4f()
+                .rotateX(camera.getRotation().x)
+                .rotateY(camera.getRotation().y)
+                .rotateZ(camera.getRotation().z);
+
+            Vector3f rotatedVector = rotationMatrix.transformDirection(delta);
+            Vector3f newObjectPosition = new Vector3f(camera.getPosition()).add(rotatedVector);
+
+            Vector3f rotatedPosition = new Vector3f(newObjectPosition)
+                .rotateX(light.getRotate().x)
+                .rotateY(light.getRotate().y)
+                .rotateZ(light.getRotate().z);
+
+            GL11.glLightfv(light.getType(), GL11.GL_POSITION, new float[] {rotatedPosition.x, rotatedPosition.y, rotatedPosition.z, 1.0f});
+
+            GL11.glLightf(light.getType(), GL11.GL_CONSTANT_ATTENUATION, light.getAttenuationParameters().x);
+            GL11.glLightf(light.getType(), GL11.GL_LINEAR_ATTENUATION, light.getAttenuationParameters().y);
+            GL11.glLightf(light.getType(), GL11.GL_QUADRATIC_ATTENUATION, light.getAttenuationParameters().z);
+            GL11.glLightfv(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, new float[] { light.getIntensity().x, light.getIntensity().y, light.getIntensity().z, light.getIntensity().w });
+
+            GL11.glEnable(light.getType());
+
+            light.render();
+        }
+    }
+
+
+    //getters
+    public boolean isRendering() {
+        return rendering;
+    }
     public long getWindow() {
         return window;
     }
@@ -152,66 +148,68 @@ public class Window implements Runnable, Serializable {
     public String getTitle() {
         return title;
     }
-    public float[] getGlFrustum() {
-        return glFrustum;
-    }
     public ArrayList<Component> getComponents() {
         return components;
     }
-    public Camera cam() {
-        return cam;
+    public Camera getCamera() {
+        return camera;
     }
-    public float getFov() {
-        return fov;
-    }
-    public boolean getLighting() {
+    public boolean isLighting() {
         return lighting;
     }
     public ArrayList<Light> getLights() {
         return lights;
     }
-    public ArrayList<Listener> getListeners() {
-        return listeners;
+    public ArrayList<Code> getRenderListener() {
+        return renderListeners;
     }
-
-    public void setSize(int width, int height) {
+    
+    //setters
+    public Window rendering(boolean rendering) {
+        this.rendering = rendering;
+        return this;
+    }
+    public Window setSize(int width, int height) {
         this.width = width;
         this.height = height;
         glfwSetWindowSize(window, width, height);
+        return this;
     }
-    public void setTitle(String title) {
+    public Window setTitle(String title) {
         this.title = title;
         glfwSetWindowTitle(window, title);
+        return this;
     }
-    public void addComponent(Component c) {
+    public Window addComponent(Component c) {
         components.add(c);
+        return this;
     }
-    public void removeComponent(Component c) {
+    public Window removeComponent(Component c) {
         components.remove(c);
+        return this;
     }
-    public void setGlFrustum(float[] glFrustum) {
-        if(glFrustum.length == 6)
-            this.glFrustum = glFrustum;
+    public Window setCamera(Camera camera) {
+        this.camera = camera;
+        return this;
     }
-    public void setCam(Camera cam) {
-        this.cam = cam;
-    }
-    public void setFov(float fov) {
-        this.fov = fov;
-    }
-    public void setLighting(boolean lighting) {
+    public Window setLighting(boolean lighting) {
         this.lighting = lighting;
+        return this;
     }
-    public void addLight(Light light) {
+    public Window addLight(Light light) {
         lights.add(light);
+        return this;
     }
-    public void removeLight(Light light) {
+    public Window removeLight(Light light) {
         lights.remove(light);
+        return this;
     }
-    public void addListener(Listener listener) {
-        listeners.add(listener);
+    public Window addRenderListener(Code renderListener) {
+        renderListeners.add(renderListener);
+        return this;
     }
-    public void removeListener(Listener listener) {
-        listeners.remove(listener);
+    public Window removeRenderListener(Code renderListener) {
+        renderListeners.remove(renderListener);
+        return this;
     }
 }
