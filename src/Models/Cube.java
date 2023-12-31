@@ -1,86 +1,72 @@
 package Models;
 
 import Engine.Component;
-
-import java.util.ArrayList;
+import Engine.Window;
 
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL11;
 
 public class Cube extends Component {
     public float size = 1.0f;
-    @Override
-    public void render() {
-        GL11.glBegin(GL11.GL_QUADS);
-        GL11.glColor3f(0.7f, 0.7f, 0.7f);
-        GL11.glVertex3f(-size, size, -size);
-        GL11.glVertex3f(size, size, -size);
-        GL11.glVertex3f(size, size, size);
-        GL11.glVertex3f(-size, size, size);
-        GL11.glVertex3f(-size, -size, -size);
-        GL11.glVertex3f(-size, -size, size);
-        GL11.glVertex3f(size, -size, size);
-        GL11.glVertex3f(size, -size, -size);
-        GL11.glVertex3f(-size, -size, size);
-        GL11.glVertex3f(-size, size, size);
-        GL11.glVertex3f(size, size, size);
-        GL11.glVertex3f(size, -size, size);
-        GL11.glVertex3f(-size, -size, -size);
-        GL11.glVertex3f(size, -size, -size);
-        GL11.glVertex3f(size, size, -size);
-        GL11.glVertex3f(-size, size, -size);
-        GL11.glVertex3f(-size, -size, -size);
-        GL11.glVertex3f(-size, -size, size);
-        GL11.glVertex3f(-size, size, size);
-        GL11.glVertex3f(-size, size, -size);
-        GL11.glVertex3f(size, -size, -size);
-        GL11.glVertex3f(size, size, -size);
-        GL11.glVertex3f(size, size, size);
-        GL11.glVertex3f(size, -size, size);
-        GL11.glEnd();
-    }
-
 
     @Override
-    public ArrayList<Vector3f> getTriangles() {
-        return new ArrayList<Vector3f>() {{
-            add(new Vector3f(-size, size, -size));
-            add(new Vector3f(-size, size, size));
+    public Vector3f[] getTriangles() {
+        return new Vector3f[] {
+            // Front face
+            new Vector3f(-size, -size, -size),
+            new Vector3f(size, -size, -size),
+            new Vector3f(size, size, -size),
 
-            add(new Vector3f(-size, size, size));
-            add(new Vector3f(-size, -size, size));
+            new Vector3f(-size, -size, -size),
+            new Vector3f(size, size, -size),
+            new Vector3f(-size, size, -size),
 
-            add(new Vector3f(-size, -size, size));
-            add(new Vector3f(-size, -size, -size));
+            // Back face
+            new Vector3f(-size, -size, size),
+            new Vector3f(size, -size, size),
+            new Vector3f(size, size, size),
 
-            add(new Vector3f(-size, -size, -size));
-            add(new Vector3f(-size, size, -size));
+            new Vector3f(-size, -size, size),
+            new Vector3f(size, size, size),
+            new Vector3f(-size, size, size),
 
+            // Top face
+            new Vector3f(-size, size, -size),
+            new Vector3f(size, size, -size),
+            new Vector3f(size, size, size),
 
-            add(new Vector3f(size, size, -size));
-            add(new Vector3f(size, size, size));
+            new Vector3f(-size, size, -size),
+            new Vector3f(size, size, size),
+            new Vector3f(-size, size, size),
 
-            add(new Vector3f(size, size, size));
-            add(new Vector3f(size, -size, size));
+            // Bottom face
+            new Vector3f(-size, -size, size),
+            new Vector3f(-size, -size, -size),
+            new Vector3f(size, -size, size),
 
-            add(new Vector3f(size, -size, size));
-            add(new Vector3f(size, -size, -size));
+            new Vector3f(-size, -size, size),
+            new Vector3f(size, -size, size),
+            new Vector3f(size, -size, -size),
 
-            add(new Vector3f(size, -size, -size));
-            add(new Vector3f(size, size, -size));
+            // Left face
+            new Vector3f(-size, -size, size),
+            new Vector3f(-size, -size, -size),
+            new Vector3f(-size, size, -size),
 
-            
-            add(new Vector3f(size, size, -size));
-            add(new Vector3f(-size, size, -size));
+            new Vector3f(-size, -size, size),
+            new Vector3f(-size, size, -size),
+            new Vector3f(-size, size, size),
 
-            add(new Vector3f(size, size, size));
-            add(new Vector3f(-size, size, size));
+            // Right face
+            new Vector3f(size, -size, -size),
+            new Vector3f(size, size, -size),
+            new Vector3f(size, -size, size),
 
-            add(new Vector3f(size, -size, size));
-            add(new Vector3f(-size, -size, size));
-
-            add(new Vector3f(size, -size, -size));
-            add(new Vector3f(-size, -size, -size));
-        }};
+            new Vector3f(size, -size, -size),
+            new Vector3f(size, -size, size),
+            new Vector3f(size, size, size)
+        };
     }
+
+    @Override
+    public void onAddingToTheWindow(Window window) {}
 }

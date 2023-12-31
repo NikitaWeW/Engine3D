@@ -8,7 +8,7 @@ public class Camera {
     private float fov = 45.0f;
     private float[] glFrustum = new float[] {-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 100.0f};
 
-    public Camera configureGlFrustum(int width, int height) {
+    public Camera configureGlFrustum(int width, int height) { //huh
         float aspectRatio = (float) width / height;
         glFrustum[3] = glFrustum[4] * (float) Math.tan(Math.toRadians(fov / 2));
         glFrustum[2] = -glFrustum[3];
@@ -17,19 +17,19 @@ public class Camera {
         return this;
     }
 
-    public Vector3f getPosition() {
-        return position;
+    public Vector3f getPosition() { return position; }
+    public Vector3f getRotation() { return rotation; }
+    public float[] getGlFrustum() { return glFrustum; }
+    public float getFov() { return fov; }
+    
+    public Camera setPosition(float x, float y, float z) {
+        position.set(x, y, z);
+        return this;
     }
-    public Vector3f getRotation() {
-        return rotation;
+    public Camera setRotation(float x, float y, float z) {
+        rotation.set(x, y, z);
+        return this;
     }
-    public float[] getGlFrustum() {
-        return glFrustum;
-    }
-    public float getFov() {
-        return fov;
-    }
-
     public Camera setPosition(Vector3f position) {
         this.position = position;
         return this;

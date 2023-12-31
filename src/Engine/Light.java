@@ -3,46 +3,30 @@ package Engine;
 import org.joml.*;
 
 public abstract class Light {
-    private Vector3f pos = new Vector3f(0, 0, 0);
-    private Vector3f rotate = new Vector3f(0, 0, 0);
-    private Vector4f intensity = new Vector4f(1, 1, 1, 0);
-    private Vector3f attenuationParameters = new Vector3f();
     private int type;
+    private Vector3f position = new Vector3f(0, 0, 0);
+    private Vector3f rotation = new Vector3f(0, 0, 0);
+
+    public Light(int type) {this.type = type;} 
 
     public abstract void render();
+    public abstract void onAddingToTheWindow(Window window);
 
-    public Light(int type) {
-        this.type = type;
-    }
+     
+    public int getType() { return type; } 
+    public Vector3f getPosition() { return position; }
+    public Vector3f getRotation() {  return rotation; }
 
-    public void setPos(Vector3f pos) {
-        this.pos = pos;
-    }
-    public void setType(int type) {
+    public Light setType(int type) {
         this.type = type;
+        return this;
     }
-    public Vector3f getPos() {
-        return pos;
+    public Light setPosition(Vector3f position) {
+        this.position = position;
+        return this;
     }
-    public void setRotate(Vector3f rotate) {
-        this.rotate = rotate;
-    }
-    public Vector3f getRotate() {
-        return rotate;
-    }
-    public void setAttenuationParameters(Vector3f attenuationParameters) {
-        this.attenuationParameters = attenuationParameters;
-    }
-    public Vector3f getAttenuationParameters() {
-        return attenuationParameters;
-    }
-    public void setIntensity(Vector4f intensity) {
-        this.intensity = intensity;
-    }
-    public Vector4f getIntensity() {
-        return intensity;
-    }
-    public int getType() {
-        return type;
+    public Light setRotation(Vector3f rotate) {
+        this.rotation = rotate;
+        return this;
     }
 }
