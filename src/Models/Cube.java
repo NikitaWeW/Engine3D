@@ -1,72 +1,69 @@
 package Models;
 
-import Engine.Component;
-import Engine.Window;
-
 import org.joml.Vector3f;
 
-public class Cube extends Component {
+public class Cube extends Engine.Component {
     public float size = 1.0f;
 
-    @Override
-    public Vector3f[] getTriangles() {
-        return new Vector3f[] {
+    public Cube() {
+        setTriangles(new float[] {
             // Front face
-            new Vector3f(-size, -size, -size),
-            new Vector3f(size, -size, -size),
-            new Vector3f(size, size, -size),
+            -size, -size, -size,
+            size, -size, -size,
+            size, size, -size,
 
-            new Vector3f(-size, -size, -size),
-            new Vector3f(size, size, -size),
-            new Vector3f(-size, size, -size),
+            -size, -size, -size,
+            size, size, -size,
+            -size, size, -size,
 
             // Back face
-            new Vector3f(-size, -size, size),
-            new Vector3f(size, -size, size),
-            new Vector3f(size, size, size),
+            -size, -size, size,
+            size, -size, size,
+            size, size, size,
 
-            new Vector3f(-size, -size, size),
-            new Vector3f(size, size, size),
-            new Vector3f(-size, size, size),
+            -size, -size, size,
+            size, size, size,
+            -size, size, size,
 
             // Top face
-            new Vector3f(-size, size, -size),
-            new Vector3f(size, size, -size),
-            new Vector3f(size, size, size),
+            -size, size, -size,
+            size, size, -size,
+            size, size, size,
 
-            new Vector3f(-size, size, -size),
-            new Vector3f(size, size, size),
-            new Vector3f(-size, size, size),
+            -size, size, -size,
+            size, size, size,
+            -size, size, size,
 
             // Bottom face
-            new Vector3f(-size, -size, size),
-            new Vector3f(-size, -size, -size),
-            new Vector3f(size, -size, size),
+            size, -size, -size,
+            -size, -size, -size,
+            size, -size, size,
 
-            new Vector3f(-size, -size, size),
-            new Vector3f(size, -size, size),
-            new Vector3f(size, -size, -size),
+            -size, -size, -size,
+            size, -size, size,
+            -size, -size, size,
 
             // Left face
-            new Vector3f(-size, -size, size),
-            new Vector3f(-size, -size, -size),
-            new Vector3f(-size, size, -size),
+            -size, -size, size,
+            -size, -size, -size,
+            -size, size, -size,
 
-            new Vector3f(-size, -size, size),
-            new Vector3f(-size, size, -size),
-            new Vector3f(-size, size, size),
+            -size, -size, size,
+            -size, size, -size,
+            -size, size, size, 
 
             // Right face
-            new Vector3f(size, -size, -size),
-            new Vector3f(size, size, -size),
-            new Vector3f(size, -size, size),
+            size, -size, -size,
+            size, size, size,
+            size, -size, size,
 
-            new Vector3f(size, -size, -size),
-            new Vector3f(size, -size, size),
-            new Vector3f(size, size, size)
-        };
-    }
-
+            size, -size, -size,
+            size, size, size,
+            size, size, -size});
+    } 
     @Override
-    public void onAddingToTheWindow(Window window) {}
+    public boolean checkColision(Engine.Component component) {
+        if(component instanceof Cube && component.getRotation().equals(new Vector3f(0))) return checkAABBColision(component);
+        return super.checkColision(component);
+    }
 }

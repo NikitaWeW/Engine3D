@@ -24,7 +24,7 @@ public class Window implements Runnable, java.io.Serializable {
     private boolean lighting = false;
     private boolean rendering = true;
 
-    public Window(int width, int height, String title) throws IllegalStateException {
+    public Window(int width, int height, String title) {
         this.width = width;
         this.height = height;
         this.title = title;
@@ -58,8 +58,10 @@ public class Window implements Runnable, java.io.Serializable {
         Vector3f componentRotation = component.getRotation();
         Vector3f componentScale = component.getScale();
 
+        for (Code renderListener : componentRenderListeners) renderListener.doSomething();
+
         //rotate camera
-        Vector3f delta = new Vector3f(camera.getPosition()).sub(component.getPosition());
+        Vector3f delta = new Vector3f(component.getPosition()).sub(camera.getPosition());
 
         glRotatef(-cameraRotation.x, 1, 0, 0);
         glRotatef(-cameraRotation.y, 0, 1, 0);
@@ -74,54 +76,17 @@ public class Window implements Runnable, java.io.Serializable {
 
         glScalef(componentScale.x, componentScale.y, componentScale.z);
 
-        //calculate normals for every vertex of the component
-        glEnableClientState(GL_NORMAL_ARRAY);
-
-        float[] normals = new float[component.getTriangles().length*3]; 
-
-        for(int i = 0; i < component.getTriangles().length; i+=3) {
-            Vector3f A = component.getTriangles()[i];
-            Vector3f B = component.getTriangles()[i+1];
-            Vector3f C = component.getTriangles()[i+2];
-        
-            Vector3f AB = B.sub(A);
-            Vector3f AC = C.sub(A);
-        
-            Vector3f BA = A.sub(B);
-            Vector3f BC = C.sub(B);
-        
-            Vector3f CA = A.sub(C);
-            Vector3f CB = B.sub(C);
-        
-            normals[i] = AB.cross(AC).normalize().x;
-            normals[i+1] = AB.cross(AC).normalize().y;
-            normals[i+2] = AB.cross(AC).normalize().z;
-        
-            normals[i+3] = BA.cross(BC).normalize().x;
-            normals[i+4] = BA.cross(BC).normalize().y;
-            normals[i+5] = BA.cross(BC).normalize().z;
-        
-            normals[i+6] = CA.cross(CB).normalize().x;
-            normals[i+7] = CA.cross(CB).normalize().y;
-            normals[i+8] = CA.cross(CB).normalize().z;
-        }
-
-        float[] transformedNormals = component.transform(normals);
-
-        glNormalPointer(GL_FLOAT, 0, java.nio.FloatBuffer.wrap(transformedNormals));
-
         component.render();
-        glDisableClientState(GL_NORMAL_ARRAY);
 
         glPopMatrix();
-        }
+    }
     public void renderLight(Light light) {
         glPushMatrix();
         
         Vector3f cameraRotation = camera.getRotation();
         Vector3f lightRotation = light.getRotation();
         
-        for (Code renderListener : renderListeners) renderListener.doSomething();
+        for (Code renderListener : lightRenderListeners) renderListener.doSomething();
         
         Vector3f delta = new Vector3f(light.getPosition()).sub(camera.getPosition());
         
@@ -143,18 +108,11 @@ public class Window implements Runnable, java.io.Serializable {
     public void render() {
         glfwMakeContextCurrent(window);
         if(!resizable) glfwSetWindowSize(window, width, height);
-        org.lwjgl.opengl.GL.createCapabilities();
+        org.lwjgl.opengl.GL.createCapabilities(); 
 
         glViewport(0, 0, width, height);
-
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        glEnable(GL_DEPTH_TEST);
-        if(lighting) { 
-            glEnable(GL_LIGHTING);
-            glEnable(GL_COLOR_MATERIAL);
-        }
-
+        
         float[] glFrustrum = camera.getGlFrustum();
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
@@ -162,6 +120,12 @@ public class Window implements Runnable, java.io.Serializable {
 
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
+
+        glEnable(GL_DEPTH_TEST);
+        if(lighting) { 
+            glEnable(GL_LIGHTING);
+            glEnable(GL_COLOR_MATERIAL);
+        }
 
         for(Code renderListener : renderListeners) renderListener.doSomething();
         for(Light light : lights) renderLight(light);
