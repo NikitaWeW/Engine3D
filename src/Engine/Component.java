@@ -15,11 +15,10 @@ public abstract class Component {
     private float[] triangles;
 
     public boolean checkAABBColision(Component component) {
-        Vector3f[] AABB = findAABB(transform(getVertices()));
-        Vector3f[] componentAABB = findAABB(component.transform(component.getVertices()));
-        return CollisionDetection.checkAABBColision(AABB[0], AABB[1], componentAABB[0], componentAABB[1]);
+        Vector3f[] AABB = findAABB3D(transform(getVertices()));
+        Vector3f[] componentAABB = findAABB3D(component.transform(component.getVertices()));
+        return checkAABBColision3D(AABB[0], AABB[1], componentAABB[0], componentAABB[1]);
     }
-
     public boolean checkColision(Component component) {
         if(!checkAABBColision(component)) return false;
 
@@ -28,18 +27,20 @@ public abstract class Component {
 
         for(int i = 0; i < triangles.length; i+=3)
             for(int j = 0; j < componentTriangles.length; j+=3)
-                if(triTriIntersection(triangles[i], triangles[i+1], triangles[i+2], 
+                if(triTriIntersection3D(triangles[i], triangles[i+1], triangles[i+2], 
                     componentTriangles[j], componentTriangles[j+1], componentTriangles[j+2])) return true;
         return false;
-    } 
+    }
     
     public void render() {
         glBegin(GL_TRIANGLES);
+        float[] triangles = getTriangles();
         for(int i = 0; i < triangles.length; i+=3) glVertex3f(triangles[i], triangles[i+1], triangles[i+2]);
         glEnd();
     }
 
     public void onAddingToTheWindow(Window window) {}
+    public void onRender() {};
 
     public static float[] toFloat(Vector3f[] points) {
         float[] xyz = new float[points.length*3];
@@ -108,7 +109,7 @@ public abstract class Component {
     public Component setTriangles(float[] triangles) {
         this.triangles = triangles;
         return this;
-    } //this is used to get a mesh of the object split into triangles too.
+    } //this is used to set a mesh of the object split into triangles.
 
     public Component setPosition(float x, float y, float z) {
         position.set(x, y, z);

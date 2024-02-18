@@ -1,6 +1,7 @@
 package Engine;
 
 import org.joml.Vector3f;
+import org.joml.Vector2f;
 
 import java.util.ArrayList;
 
@@ -17,6 +18,7 @@ public class Window implements Runnable, java.io.Serializable {
     private String title;
     private ArrayList<Component> components = new ArrayList<>();
     private ArrayList<Light> lights = new ArrayList<>();
+    private ArrayList<GUI> GUIs = new ArrayList<>();
     private ArrayList<Code> renderListeners = new ArrayList<>();
     private ArrayList<Code> componentRenderListeners = new ArrayList<>();
     private ArrayList<Code> lightRenderListeners = new ArrayList<>();
@@ -40,7 +42,7 @@ public class Window implements Runnable, java.io.Serializable {
         
         camera.configureGlFrustum(width, height);
 
-        while(!glfwWindowShouldClose(window)) {
+        while(!glfwWindowShouldClose(window)) { //main loop
             while(!rendering){} //just wait
             render();
         }
@@ -49,68 +51,12 @@ public class Window implements Runnable, java.io.Serializable {
 
         glfwDestroyWindow(window);
     }
-
-    //render stuff
-    public void renderComponent(Component component) {
-        glPushMatrix();
-
-        Vector3f cameraRotation = camera.getRotation();
-        Vector3f componentRotation = component.getRotation();
-        Vector3f componentScale = component.getScale();
-
-        for (Code renderListener : componentRenderListeners) renderListener.doSomething();
-
-        //rotate camera
-        Vector3f delta = new Vector3f(component.getPosition()).sub(camera.getPosition());
-
-        glRotatef(-cameraRotation.x, 1, 0, 0);
-        glRotatef(-cameraRotation.y, 0, 1, 0);
-        glRotatef(-cameraRotation.z, 0, 0, 1);
-
-        glTranslatef(delta.x, delta.y, delta.z);
-
-        //transform component
-        glRotatef(componentRotation.x, 1, 0, 0);
-        glRotatef(componentRotation.y, 0, 1, 0);
-        glRotatef(componentRotation.z, 0, 0, 1);
-
-        glScalef(componentScale.x, componentScale.y, componentScale.z);
-
-        component.render();
-
-        glPopMatrix();
-    }
-    public void renderLight(Light light) {
-        glPushMatrix();
-        
-        Vector3f cameraRotation = camera.getRotation();
-        Vector3f lightRotation = light.getRotation();
-        
-        for (Code renderListener : lightRenderListeners) renderListener.doSomething();
-        
-        Vector3f delta = new Vector3f(light.getPosition()).sub(camera.getPosition());
-        
-        glRotatef(cameraRotation.x, 1, 0, 0);
-        glRotatef(cameraRotation.y, 0, 1, 0);
-        glRotatef(cameraRotation.z, 0, 0, 1);
-
-        glTranslatef(delta.x, delta.y, delta.z);
-    
-        glRotatef(lightRotation.x, 1.0f, 0.0f, 0.0f);
-        glRotatef(lightRotation.y, 0.0f, 1.0f, 0.0f);
-        glRotatef(lightRotation.z, 0.0f, 0.0f, 1.0f);
-
-        glEnable(light.getType());
-        light.render();
-
-        glPopMatrix();
-    }
     public void render() {
         glfwMakeContextCurrent(window);
-        if(!resizable) glfwSetWindowSize(window, width, height);
-        org.lwjgl.opengl.GL.createCapabilities(); 
+        org.lwjgl.opengl.GL.createCapabilities();
 
-        glViewport(0, 0, width, height);
+        if(!resizable) glfwSetWindowSize(window, width, height);
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         float[] glFrustrum = camera.getGlFrustum();
@@ -118,18 +64,44 @@ public class Window implements Runnable, java.io.Serializable {
         glLoadIdentity();
         glFrustum(glFrustrum[0], glFrustrum[1], glFrustrum[2], glFrustrum[3], glFrustrum[4], glFrustrum[5]);
 
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-
         glEnable(GL_DEPTH_TEST);
-        if(lighting) { 
+        if(lighting) {
             glEnable(GL_LIGHTING);
             glEnable(GL_COLOR_MATERIAL);
         }
 
         for(Code renderListener : renderListeners) renderListener.doSomething();
-        for(Light light : lights) renderLight(light);
-        for(Component component : components) renderComponent(component);
+        for(Component component : components) { //render all components
+            glPushMatrix();
+
+            component.onRender();
+
+            Vector3f cameraRotation = camera.getRotation();
+            Vector3f componentRotation = component.getRotation();
+            Vector3f componentScale = component.getScale();
+
+            for (Code renderListener : componentRenderListeners) renderListener.doSomething();
+
+            //rotate camera
+            Vector3f delta = new Vector3f(component.getPosition()).sub(camera.getPosition());
+
+            glRotatef(-cameraRotation.x, 1, 0, 0);
+            glRotatef(-cameraRotation.y, 0, 1, 0);
+            glRotatef(-cameraRotation.z, 0, 0, 1);
+
+            glTranslatef(delta.x, delta.y, delta.z);
+
+            //transform component
+            glRotatef(componentRotation.x, 1, 0, 0);
+            glRotatef(componentRotation.y, 0, 1, 0);
+            glRotatef(componentRotation.z, 0, 0, 1);
+
+            glScalef(componentScale.x, componentScale.y, componentScale.z);
+
+            component.render();
+
+            glPopMatrix();
+        }
 
         glDisable(GL_LIGHTING);
         glDisable(GL_COLOR_MATERIAL);

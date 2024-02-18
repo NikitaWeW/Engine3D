@@ -1,0 +1,88 @@
+line - plane intersection
+    |x-A.x      y-A.y       z-A.z  |
+    |B.x-A.x    B.y-A.y     B.z-A.z| = 0 
+    |C.x-A.x    C.y-A.y     C.z-A.z|
+
+    t = (x-P.x)/(Q.x-P.x) = (y-P.y)/(Q.y-P.y) = (z-P.z)/(Q.z-P.z)
+
+    x = t(Q.x-P.x)+P.x
+    y = t(Q.y-P.y)+P.y
+    z = t(Q.z-P.z)+P.z
+
+    |t(Q.y-P.x)+P.x-A.x      t(Q.y-P.y)+P.y-A.y       t(Q.z-P.z)+P.z-A.z  |
+    |B.x-A.x                 B.y-A.y                  B.z-A.z             | = 0 <---- determinant
+    |C.x-A.x                 C.y-A.y                  C.z-A.z             |
+
+    a = -(Px-Ax)*(By-Ay)*(Cz-Az) -
+         (Py-Ay)*(Bz-Az)*(Cx-Ax) -
+         (Pz-Az)*(Bx-Ax)*(Cy-Ay) +
+         (Pz-Az)*(By-Ay)*(Cx-Ax) +
+         (Px-Ax)*(Bz-Az)*(Cy-Ay) +
+         (Py-Ay)*(Bx-Ax)*(Cz-Az);
+
+    b = (Qx-Px)*(By-Ay)*(Cz-Az) +
+        (Qy-Py)*(Bz-Az)*(Cx-Ax) +
+        (Qz-Pz)*(Bx-Ax)*(Cy-Ay) -
+        (Qz-Pz)*(By-Ay)*(Cx-Ax) -
+        (Qx-Px)*(Bz-Az)*(Cy-Ay) -
+        (Qy-Py)*(Bx-Ax)*(Cz-Az);
+
+    a = b = 0 => ABC and PQ are in the same plane => true
+    b = 0 => A plane and a line do not intersect => false
+
+    t = a/b
+line - line intersection 
+    Consider the intersection of two lines L1 and L2 in two-dimensional space, 
+    with line L1 being defined by two distinct points (x1, y1) and (x2, y2), 
+    and line L2 being defined by two distinct points (x3, y3) and (x4, y4).
+
+    The intersection P of line L1 and L2 can be defined using determinants.
+    
+             | |x1 y1| |x1 1| |   | |x1 1| |y1 1| |
+             | |x2 y2| |x2 1| |   | |x2 1| |y2 1| |
+        Px = |                | / |               |
+             | |x3 y3| |x3 1| |   | |x3 1| |y3 1| |
+             | |x4 y4| |x4 1| |   | |x4 1| |y4 1| |
+
+             | |x1 y1| |y1 1| |   | |x1 1| |y1 1| |
+             | |x2 y2| |y2 1| |   | |x2 1| |y2 1| |
+        Py = |                | / |               |
+             | |x3 y3| |y3 1| |   | |x3 1| |y3 1| |
+             | |x4 y4| |y4 1| |   | |x4 1| |y4 1| |
+        
+        The determinants can be written out as:
+
+        Px = ( (x1*y2 - y1*x2)*(x3 - x4) - (x1 - x2)*(x3*y4 - y3*x4) ) / ( (x1 - x2)*(y3 - y4) - (y1 - y2)*(x3 - x4) )
+        Py = ( (x1*y2 - y1*x2)*(y3 - y4) - (y1 - y2)*(x3*y4 - y3*x4) ) / ( (x1 - x2)*(y3 - y4) - (y1 - y2)*(x3 - x4) )
+
+        When the two lines are parallel or coincident, the denominator is zero.
+
+        from https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection#cite_note-Wolfram-1
+
+        ¯\_(ツ)_/¯
+line - line intersection
+    Patametric form of the 1st line lying at the point (x1; y1) along the direction of vector (x2; y2)
+
+    x = x1 + x2 * t
+    y = y1 + y2 * t
+
+    Patametric form of the 2nd line lying at the point (x3; y3) along the direction of vector (x4; y4)
+
+    x = x3 + x4 * s
+    y = y3 + y4 * s
+
+    x1 + x2 * t = x3 + x4 * s
+    y1 + y2 * t = y3 + y4 * s
+
+    now, solve the equation to find t and s to find xyz of a intersection point
+    
+    s = (x1 + x2 * t - x3) / x4 = (y1 + y2 * t - y3) / y4
+
+    y4 * (x1 + x2 * t - x3) = x4 * (y1 + y2 * t - y3)
+
+    y4 * x1 + y4 * x2 * t - y4 * x3 = x4 * y1 + x4 * y2 * t - x4 * y3
+
+    x2 * y4 * t - x4 * y2 * t = x4 * y1 - x4 * y3 - y4 * x1 + x3 * y4
+
+    t = (x4 * y1 - x4 * y3 - x1 * y4 - x3 * y4) / (x2 * y4 - x4 * y2)
+    s = (x1 + x2 * t - x3) / x4
